@@ -29,8 +29,8 @@ class Caixa extends Clubes {
   constructor(cliente) {
       super();
       this.cliente = ( (info) => {
-                if (cliente instanceof Cliente)
-                        return cliente;
+                if (info instanceof Cliente)
+                        return info;
                 return undefined;
         })(cliente);
       this.subtotal = 0;
