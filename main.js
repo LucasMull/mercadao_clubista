@@ -1,6 +1,6 @@
 "use strict";
 
-class Clubes {
+class clubeLista {
   constructor() {
       //possíveis categorias para produtos
       this.categorias = [
@@ -25,21 +25,25 @@ class Clubes {
   }
 };
 
-class Caixa extends Clubes {
-  constructor(cliente) {
-      super();
+class Caixa {
+  constructor(cliente, clube) {
       this.cliente = ( (info) => {
                 if (info instanceof Cliente)
                         return info;
                 return undefined;
         })(cliente);
+      this.clube = ( (info) => {
+                if (info instanceof clubeLista)
+                        return info;
+                return 'nenhum';
+        })(clube);
       this.subtotal = 0;
       this.complemento = 0;
 
       this.insereCesta = (produto = {}) => {
           if ( produto instanceof Produto ) {
-                if( this[cliente.clube][1].includes(produto.categoria) )
-                        this.complemento += produto.valor * this[cliente.clube][0];
+                if( this.clube[cliente.clube][1].includes(produto.categoria) )
+                        this.complemento += produto.valor * this.clube[cliente.clube][0];
                 this.subtotal += produto.valor;
                 cliente.cesta.push(produto);
           }
@@ -69,7 +73,7 @@ class Cliente {
       this.saldo = saldo;
       // função q executa e atribui valor imediatamente
       this.clube = ( (info) => {
-          if ( info in new Clubes )
+          if ( info in new clubeLista )
                 return info;
           return 'nenhum';
         })(clube);
@@ -82,7 +86,7 @@ class Produto {
       this.nome = nome;
       this.valor = valor;
       this.categoria = ( (info) => {
-         if ( (new Clubes).categorias.includes(info) )
+         if ( (new clubeLista).categorias.includes(info) )
                 return info;
          return null;
       })(categoria);
@@ -91,7 +95,7 @@ class Produto {
 
 
 const cliente = new Cliente('Lucas Muller',200,'jovem');
-const caixa = new Caixa(cliente); 
+const caixa = new Caixa(cliente, new clubeLista); 
 const produto = new Produto('Maça',4.50,'fruta');
 const produto1 = new Produto('Detergente',7.25,'limpeza');
 const produto2 = new Produto('Fralda',12.30,'geriatrico');
