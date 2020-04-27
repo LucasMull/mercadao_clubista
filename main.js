@@ -1,6 +1,6 @@
 "use strict";
 
-class clubeLista {
+class ClubeLista {
   constructor() {
       //possíveis categorias para produtos
       this.categorias = [
