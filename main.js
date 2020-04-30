@@ -7,7 +7,7 @@ class ClubeTemplate {
   }
 };
 
-class ClubeLista {
+class ListaClube {
   constructor() {
       //possíveis categorias para produtos
       this.categoriasLista = [
@@ -34,26 +34,40 @@ class ClubeLista {
 
 
 class Caixa {
-  constructor(cliente, clubeLista, fundos) {
+  constructor(listaClube, cliente) {
+      this.listaClube = ((info) => {
+                if (info instanceof ListaClube)
+                        return info;
+                return 'nenhum';
+        })(listaClube);
       this.cliente = ((info) => {
                 if (info instanceof Cliente)
                         return info;
                 return undefined;
         })(cliente);
-      this.clubeLista = ((info) => {
-                if (info instanceof ClubeLista)
-                        return info;
-                return 'nenhum';
-        })(clubeLista);
-      this.fundos = fundos;
       this.subtotal = 0;
       this.total = 0;
       this.complemento = 0;
+
+      this.arrecadado = (() => {
+          let totalFundos = 0;
+          function addAmount(val) {
+                  totalFundos += val;
+          }
+          return {
+                  add: (val) => {
+                          addAmount(val);
+                  },
+                  value: () => {
+                          return totalFundos;
+                  }
+          }
+      })();
   };
   
   insereCesta(produto = {}) {
      if( this.produtoIncluiBeneficio(produto) )
-            this.complemento += produto.valor * this.clubeLista[cliente.clube].descontoClube;
+            this.complemento += produto.valor * this.listaClube[cliente.clube].descontoClube;
      this.subtotal += produto.valor;
      cliente.cesta.push(produto);
   };
@@ -62,7 +76,7 @@ class Caixa {
      retorna true ou false */
   produtoIncluiBeneficio(produto) {
      if ( produto instanceof Produto ){
-          let categoriasDoClube = this.clubeLista[cliente.clube].categoriasClube;
+          let categoriasDoClube = this.listaClube[cliente.clube].categoriasClube;
           return categoriasDoClube.includes(produto.categoria); 
      }
      return false;
@@ -72,7 +86,7 @@ class Caixa {
       switch (this.cliente.clube) {
               case 'filantropo':
                       this.total = this.subtotal + this.complemento;
-                      this.fundos.add(this.complemento);
+                      this.arrecadado.add(this.complemento);
                       break;
               case 'jovem':
                       this.cliente.cesta.forEach( (elemento, indice) => {
@@ -91,7 +105,7 @@ class Caixa {
       console.log(this.cliente.cesta);
       console.log (
         "\nCLUBE: " + this.cliente.clube +
-        "\nTOTAL ARRECADADO: " + toBRLCurrency(this.fundos.value()) +
+        "\nTOTAL ARRECADADO: " + toBRLCurrency(this.arrecadado.value()) +
         "\nSUBTOTAL: " + toBRLCurrency(this.subtotal) +
         "\nCOMPLEMENTO: " + toBRLCurrency(this.complemento) +
         "\nTOTAL: " + toBRLCurrency(this.total) +
@@ -103,12 +117,11 @@ class Caixa {
 
 
 class Cliente {
-  constructor(nome,saldo,clube) {
+  constructor(nome,clube) {
       this.nome = nome;
-      this.saldo = saldo;
       // função q executa e atribui valor imediatamente
       this.clube = ( (info) => {
-          if ( info in new ClubeLista )
+          if ( info in new ListaClube )
                 return info;
           return 'nenhum';
         })(clube);
@@ -122,28 +135,12 @@ class Produto {
       this.nome = nome;
       this.valor = valor;
       this.categoria = ( (info) => {
-         if ( (new ClubeLista).categoriasLista.includes(info) )
+         if ( (new ListaClube).categoriasLista.includes(info) )
                 return info;
          return null;
       })(categoria);
   }
 };
-
-
-const fundos = (() => {
-      let totalFundos = 0;
-      function addAmount(val) {
-              totalFundos += val;
-      }
-      return {
-              add: (val) => {
-                      addAmount(val);
-              },
-              value: () => {
-                      return totalFundos;
-              }
-      }
-})();
 
 
 function toBRLCurrency(n) {
@@ -162,8 +159,9 @@ const produto5 = new Produto('Rum',37.50,'alcool');
 const produto6 = new Produto('Cachaça',102.50,'alcool');
 const produto7 = new Produto('Toddynho',2.50,'alcool');
 
-let cliente = new Cliente('Lucas Muller',200,'jovem');
-let caixa = new Caixa(cliente, new ClubeLista, fundos); 
+let cliente = new Cliente('Lucas Muller','filantropo');
+let caixa = new Caixa(new ListaClube); 
+caixa.cliente = cliente;
 caixa.insereCesta(produto0);
 caixa.insereCesta(produto1);
 caixa.insereCesta(produto2);
@@ -173,8 +171,8 @@ caixa.outputInfo();
 
 console.log('---------------------------------------------');
 
-cliente = new Cliente('Guilherme Silva Gomes',500,'filantropo');
-caixa = new Caixa(cliente, new ClubeLista, fundos); 
+cliente = new Cliente('Guilherme Silva Gomes','filantropo');
+caixa.cliente = cliente; 
 caixa.insereCesta(produto4);
 caixa.insereCesta(produto5);
 caixa.insereCesta(produto6);
