@@ -1,42 +1,40 @@
 "use strict";
 
 class ClubeTemplate {
-  constructor(desconto, categorias) {
-        this.descontoClube = desconto;
-        this.categoriasClube = categorias;
+  constructor(desconto, categorias){
+      this.descontoClube = desconto; 
+      this.categoriasClube = categorias;
   }
 };
 
-class ListaClube {
-  constructor() {
-      //possíveis categorias para produtos
-      this.categoriasLista = [
-        'carne',
-        'fruta',
-        'verdura',
-        'limpeza',
-        'geriatrico',
-        'doce',
-        'peixe',
-        'higiene',
-        'alcool'
-      ];
+const CategoriaProduto = [
+    //possíveis categorias para produtos
+    'carne',
+    'fruta',
+    'verdura',
+    'limpeza',
+    'geriatrico',
+    'doce',
+    'peixe',
+    'higiene',
+    'alcool'
+];
+
+const ListaClube = {
       //pctg de desconto oferecido por clube e produtos inclusos no beneficio
-      this.churrasco = new ClubeTemplate(0.05, ['carne']);
-      this.verde = new ClubeTemplate(0.03, ['fruta','verdura']);
-      this.limpeza = new ClubeTemplate(0.07, ['limpeza']);
-      this.idade = new ClubeTemplate(0.1, ['geriatrico']);
-      this.jovem = new ClubeTemplate(0.25, ['doce']);
-      this.nenhum = new ClubeTemplate(0, ['peixe','higiene','alcool']);
-      this.filantropo = new ClubeTemplate(0.15, this.categoriasLista);
-  }
+      churrasco : new ClubeTemplate(0.05, ['carne']),
+      verde : new ClubeTemplate(0.03, ['fruta', 'verdura']),
+      limpeza : new ClubeTemplate(0.07, ['limpeza']),
+      idade : new ClubeTemplate(0.1, ['geriatrico']),
+      jovem : new ClubeTemplate(0.25, ['doce']),
+      nenhum : new ClubeTemplate(0, ['peixe','higiene','alcool']),
+      filantropo : new ClubeTemplate(0.15, CategoriaProduto)
 };
-
 
 class Caixa {
   constructor(listaClube, cliente) {
       this.listaClube = ((info) => {
-                if (info instanceof ListaClube)
+                if (info == ListaClube)
                         return info;
                 return 'nenhum';
         })(listaClube);
@@ -121,7 +119,7 @@ class Cliente {
       this.nome = nome;
       // função q executa e atribui valor imediatamente
       this.clube = ( (info) => {
-          if ( info in new ListaClube )
+          if ( info in ListaClube )
                 return info;
           return 'nenhum';
         })(clube);
@@ -135,7 +133,7 @@ class Produto {
       this.nome = nome;
       this.valor = valor;
       this.categoria = ( (info) => {
-         if ( (new ListaClube).categoriasLista.includes(info) )
+         if ( CategoriaProduto.includes(info) )
                 return info;
          return null;
       })(categoria);
@@ -149,6 +147,7 @@ function toBRLCurrency(n) {
 
 
 /* TESTING AREA */
+console.log(ListaClube.verde);
 
 const produto0 = new Produto('Maça',4.50,'fruta');
 const produto1 = new Produto('Detergente',7.25,'limpeza');
@@ -160,7 +159,7 @@ const produto6 = new Produto('Cachaça',102.50,'alcool');
 const produto7 = new Produto('Toddynho',2.50,'alcool');
 
 let cliente = new Cliente('Lucas Muller','filantropo');
-let caixa = new Caixa(new ListaClube); 
+let caixa = new Caixa(ListaClube); 
 caixa.cliente = cliente;
 caixa.insereCesta(produto0);
 caixa.insereCesta(produto1);
