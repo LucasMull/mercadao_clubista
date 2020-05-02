@@ -65,8 +65,8 @@ class Caixa {
   
   insereCesta(produto = {}) {
      if( this.produtoIncluiBeneficio(produto) )
-            this.complemento += produto.valor * this.listaClube[cliente.clube].descontoClube;
-     this.subtotal += produto.valor;
+            this.complemento += produto.preco * this.listaClube[cliente.clube].descontoClube;
+     this.subtotal += produto.preco;
      cliente.cesta.push(produto);
   };
 
@@ -74,8 +74,8 @@ class Caixa {
      retorna true ou false */
   produtoIncluiBeneficio(produto) {
      if ( produto instanceof Produto ){
-          let categoriasDoClube = this.listaClube[cliente.clube].categoriasClube;
-          return categoriasDoClube.includes(produto.categoria); 
+          let categoriasDoClubeCliente = this.listaClube[cliente.clube].categoriasClube;
+          return categoriasDoClubeCliente.includes(produto.categoria); 
      }
      return false;
   };
@@ -87,9 +87,9 @@ class Caixa {
                       this.arrecadado.add(this.complemento);
                       break;
               case 'jovem':
-                      this.cliente.cesta.forEach( (elemento, indice) => {
-                            if ( elemento.categoria === 'alcool' ){
-                                    this.subtotal -= elemento.valor;
+                      this.cliente.cesta.forEach( (produto, indice) => {
+                            if ( produto.categoria === 'alcool' ){
+                                    this.subtotal -= produto.preco;
                                     this.cliente.cesta.splice(indice,1);
                             }
                       });
@@ -107,7 +107,7 @@ class Caixa {
         "\nSUBTOTAL: " + toBRLCurrency(this.subtotal) +
         "\nCOMPLEMENTO: " + toBRLCurrency(this.complemento) +
         "\nTOTAL: " + toBRLCurrency(this.total) +
-        "\n\nObrigado pela escolha " + this.cliente.nome +
+        "\n\nObrigado preferência " + this.cliente.nome +
         "\nVolte sempre!"
       );
   };  
@@ -129,9 +129,20 @@ class Cliente {
 
 
 class Produto {
-  constructor(nome,valor,categoria) {
+  constructor(nome,preco,categoria) {
       this.nome = nome;
-      this.valor = valor;
+      this.preco = ((info) => {
+        try {
+            if ( typeof info != "number" ){
+                    throw new Error('Preço inválido: ' + this.nome);
+            }
+        } catch (e) {
+            console.log(e.message);
+            process.exit(1);
+        } finally {
+            return info;
+        }
+      })(preco);
       this.categoria = ( (info) => {
          if ( CategoriaProduto.includes(info) )
                 return info;
@@ -147,9 +158,7 @@ function toBRLCurrency(n) {
 
 
 /* TESTING AREA */
-console.log(ListaClube.verde);
-
-const produto0 = new Produto('Maça',4.50,'fruta');
+const produto0 = new Produto('Maça',4.20,'fruta');
 const produto1 = new Produto('Detergente',7.25,'limpeza');
 const produto2 = new Produto('Fralda',12.30,'geriatrico');
 const produto3 = new Produto('Vinho',17.50,'alcool');
