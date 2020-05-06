@@ -49,7 +49,6 @@ class Caixa {
 
       this.arrecadado = (() => {
           let totalFundos = 0;
-          console.log(this);
           function addAmount(val) {
                   totalFundos += val;
           }

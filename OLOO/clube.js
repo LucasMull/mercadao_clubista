@@ -2,23 +2,12 @@
 
 const produto = require("./produto.js");
 
-const ClubeTemplate = {
-    init() { 
-     this.descontoClube = desconto;
-     this.categoriasClube = categorias;
-    }
-};
-
-function OD(prot,obj){
-    return Object.assign(Object.create(prot), obj);
-}
-
-const ListaClube = Object.create(Object.prototype, {
-    criar: {
+const ListaClube = {};
+Object.defineProperty(ListaClube, "criar", {
+        writable: false,
         enumerable: false,
         value: function(clube, x, y) {
-            this[clube] = OD(ClubeTemplate, {desconto: x, categorias: y}) 
-        }
+            this[clube] = {desconto: x, categorias: y};
     }
 });
 
